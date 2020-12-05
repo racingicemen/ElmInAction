@@ -1,4 +1,6 @@
-port module PhotoGroove exposing (main)
+port module PhotoGroove exposing 
+    (Model, Msg(..), Photo, Status(..), 
+    initialModel, main, photoDecoder, update, urlPrefix, view, photoFromUrl)
 
 import Html exposing (..)
 import Html.Attributes as Attr exposing(class, classList, id, name, src, title, type_)
@@ -274,3 +276,6 @@ onSlide toMsg =
     at [ "detail", "userSlidTo" ] int
         |> Json.Decode.map toMsg
         |> on "slide"
+
+photoFromUrl : String -> Photo
+photoFromUrl url = Photo url 0 ""
