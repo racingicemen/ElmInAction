@@ -15,6 +15,7 @@ type Folder =
         { name : String
         , photoUrls : List String
         , subfolders : List Folder
+        , expanded : Bool
         }
 
 type alias Model =
@@ -27,7 +28,7 @@ initialModel : Model
 initialModel =
     { selectedPhotoUrl = Nothing
     , photos = Dict.empty
-    , root = Folder { name = "Loading...", photoUrls = [], subfolders = [] }
+    , root = Folder { name = "Loading...", expanded = True, photoUrls = [], subfolders = [] }
     }
 
 init : () -> ( Model, Cmd Msg )
@@ -68,30 +69,30 @@ modelDecoder =
             ]
         , root =
             Folder
-                { name = "Photos", photoUrls = []
+                { name = "Photos", expanded = True, photoUrls = []
                 , subfolders =
                     [ Folder
-                        { name = "2016", photoUrls = [ "trevi", "coli" ]
+                        { name = "2016", expanded = True, photoUrls = [ "trevi", "coli" ]
                         , subfolders =
                             [ Folder
-                                { name = "outdoors", photoUrls = []
+                                { name = "outdoors", expanded = True, photoUrls = []
                                 , subfolders = []
                                 }
                             , Folder
-                                { name = "indoors", photoUrls = [ "fresco" ]
+                                { name = "indoors", expanded = True, photoUrls = [ "fresco" ]
                                 , subfolders = []
                                 }
                             ]
                         }
                     , Folder
-                        { name = "2017", photoUrls = []
+                        { name = "2017", expanded = True, photoUrls = []
                         , subfolders =
                             [ Folder
-                                { name = "outdoors", photoUrls = []
+                                { name = "outdoors", expanded = True, photoUrls = []
                                 , subfolders = []
                                 }
                             , Folder
-                                { name = "indoors", photoUrls = []
+                                { name = "indoors", expanded = True, photoUrls = []
                                 , subfolders = []
                                 }
                             ]
@@ -194,3 +195,29 @@ viewFolder (Folder folder) =
 urlPrefix : String
 urlPrefix =
     "http://elm-in-action.com/"
+
+type FolderPath
+    = End
+    | Subfolder Int FolderPath
+
+toggleExpanded : FolderPath -> Folder -> Folder
+toggleExpanded path (Folder folder) =
+    case path of 
+        End ->
+            Folder { folder | expanded = not folder.expanded }
+
+        Subfolder targetIndex remainingPath ->
+            let
+                subfolders : List Folder
+                subfolders =
+                    List.indexedMap transform folder.subfolders
+
+                transform : Int -> Folder -> Folder
+                transform currentIndex currentSubfolder =
+                    if currentIndex == targetIndex then
+                        toggleExpanded remainingPath currentSubfolder
+                    else
+                        currentSubfolder
+            in
+                Folder { folder | subfolders = subfolders }
+            
