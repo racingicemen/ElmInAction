@@ -1,6 +1,4 @@
-port module PhotoGroove exposing 
-    (Model, Msg(..), Photo, Status(..), 
-    initialModel, main, photoDecoder, update, urlPrefix, view, photoFromUrl)
+port module PhotoGallery exposing (Model, Msg, init, update, view, subscriptions)
 
 import Html exposing (..)
 import Html.Attributes as Attr exposing(class, classList, id, name, src, title, type_)
@@ -101,8 +99,7 @@ viewFilter toMsg name magnitude =
 
 viewLoaded : List Photo -> String -> Model -> List (Html Msg)
 viewLoaded photos selectedUrl model =
-        [ h1 [] [ text "Photo Groove" ]
-        , button
+        [ button
             [ onClick ClickedSurpriseMe ]
             [ text "Surprise Me!"]
         , div [ class "activity" ] [ text model.activity ]
